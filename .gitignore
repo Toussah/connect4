@@ -1,3 +1,15 @@
+# Created by .ignore support plugin (hsz.mobi)
+### IPythonNotebook template
+# Temporary data
+.ipynb_checkpoints/
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -20,7 +32,6 @@ lib64/
 parts/
 sdist/
 var/
-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -43,8 +54,7 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
-*.cover
-.hypothesis/
+*,cover
 
 # Translations
 *.mo
@@ -52,14 +62,7 @@ coverage.xml
 
 # Django stuff:
 *.log
-local_settings.py
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
+*.log.*
 
 # Sphinx documentation
 docs/_build/
@@ -67,35 +70,7 @@ docs/_build/
 # PyBuilder
 target/
 
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pyenv
-.python-version
-
-# celery beat schedule file
-celerybeat-schedule
-
-# SageMath parsed files
-*.sage.py
-
-# dotenv
+*.xls
+.DS_Store
 .env
-
-# virtualenv
-.venv
-venv/
-ENV/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
+*.sqlite3
