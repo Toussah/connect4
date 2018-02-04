@@ -3,24 +3,33 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.db import models
+from djchoices import DjangoChoices, ChoiceItem
 
 # Create your models here.
 
+
 @python_2_unicode_compatible
 class Game(models.Model):
+
+    class Status(DjangoChoices):
+        """Enum class for the different possible status of a game."""
+        new = ChoiceItem('new')
+        first_player = ChoiceItem('player1')
+        second_player = ChoiceItem('player2')
+        finished = ChoiceItem('finished')
+
     player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='player_1')
     player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='player_2', blank=True, null=True)
-    status = models.CharField(max_length=10)
+    status = models.CharField(max_length=10, choices=Status.choices)
     winner = models.CharField(max_length=10)
     created_date = models.DateTimeField(default=timezone.now)
-
 
     def __str__(self):
         if self.player2:
             return ' vs '.join([self.player1.get_full_name(), self.player2.get_full_name()])
 
         else:
-            return 'Join now to play %s'%self.player1.get_short_name()
+            return 'Join now to play %s' % self.player1.get_short_name()
 
     @property
     def start_date(self):
@@ -42,13 +51,20 @@ class Game(models.Model):
         else:
             return False
 
-    def make_move(self, player, row, column):
-        try:
-             self.coin_set.create(game=self, player=player, row=row, column=column)
-        except:
-             return False
+    def create_new_coin(self, user):
+        return Coin(game=self, player=user)
 
-        return True
+    def player_context(self, user):
+        player = None
+        next_turn = False
+        if self.player1 == user:
+            player = 'player1'
+            next_turn = self.status == Game.Status.first_player
+        elif self.player2 == user:
+            player = 'player2'
+            next_turn = self.status == Game.Status.second_player
+        return player, next_turn
+
 
 @python_2_unicode_compatible
 class Coin(models.Model):
@@ -62,3 +78,4 @@ class Coin(models.Model):
         return ' '.join([
             self.player, 'to', self.row, self.column
         ])
+
