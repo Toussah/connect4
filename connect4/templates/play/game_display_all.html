@@ -1,0 +1,47 @@
+
+<h3 class="panel-header">{{ header }}</h3>
+
+<div class="list-group" >
+    <h4 class="panel-header">Your current games</h4>
+    {% for game in current_games %}
+        <a class="list-group-item" href="{{ game.get_play_url }}">
+            {{ game }}:
+            It's the turn of:
+            {% if game.status == "player1" %}
+                {{game.player1.get_full_name}}
+            {% else %}
+                {{game.player2.get_full_name}}
+            {% endif %}
+            <span class="badge">{{ game.last_move }}</span></a>
+    {% empty %}
+        <span class="list-group-item">No game in progress.</span>
+    {% endfor %}
+</div>
+<div class="list-group" >
+    <h4 class="panel-header">Join any of those games!</h4>
+    {% for game in join_up_games %}
+        <a class="list-group-item" href="{{ game.get_play_url }}">
+            {{ game }}
+    {% empty %}
+        <span class="list-group-item">No games available.</span>
+    {% endfor %}
+</div>
+<div class="list-group" >
+    <h4 class="panel-header">Your finished games.</h4>
+    {% for game in concluded_games %}
+        <a class="list-group-item" href="{{ game.get_play_url }}">
+            {{ game }}:
+            {% if game.winner == "player1" %}
+                {{game.player1.get_full_name}} won!!
+            {% elif game.winner == "player1" %}
+                {{game.player2.get_full_name}} won!!
+            {% else %}
+                A draw.
+            {% endif %}
+    {% empty %}
+        <span class="badge">{{ game.last_move }}</span></a>
+    {% endfor %}
+</div>
+<div>
+    <a href="">Create a new game.</a>
+</div>

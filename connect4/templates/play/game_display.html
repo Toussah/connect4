@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}
+{{ game }}
+{% endblock title %}
+
+{% block styling %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <style type="text/css">
+        .connect4-cell {
+            background-color: #debb27;
+        }
+        #last-move {
+            background-color:  #DF6E1E;
+        }
+    </style>
+{% endblock styling %}
+
+{% block content %}
+    <h3>Game: {{ game }}</h3>
+    <div class="col-sm-9">
+        <p class="text-info">
+           {% include "game/game_status.html" %}
+        </p>
+
+        <table class="table table-bordered" style="width: 60px; border-width: 2px">
+            {% for coin in game.coin_set %}
+                <td class="connect4-cell"
+                    style="width: 20px; height: 20px"
+                    data-x="{{ coin.row }}"
+                    data-y="{{ coin.column }}"
+                    {% if coin.column == game.last_move.column and coin.row == game.last_move.row %}
+                        id="last-move"
+                    {% endif %}
+
+                >
+                    {% if coin.player == game.player1 %}
+                       <span class="fa fa-circle-o" style="padding-right: 2px" ></span>
+                    {% else %}
+                       <span class="glyphicon glyphicon-remove" ></span>
+                </td>
+            {% endfor %}
+        </table>
+
+        {% block moveform %}{% endblock moveform %}
+    </div>
+{% endblock content %}

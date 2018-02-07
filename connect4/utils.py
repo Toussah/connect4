@@ -15,7 +15,7 @@ class GameManager:
         return Game.objects.filter(
             ~Q(status=Game.Status.finished),
             Q(player1=user) | Q(player2=user)
-        ).values_list('pk', flat=True)
+        )
 
     @staticmethod
     def get_join_up_games(user):
@@ -26,14 +26,14 @@ class GameManager:
         return Game.objects.filter(
             ~Q(status=Game.Status.finished),
             ~Q(player1=user) & Q(player2__isnull=True)
-        ).values_list('pk', flat=True)
+        )
 
     @staticmethod
     def get_concluded_games(user):
         return Game.objects.filter(
             Q(status=Game.Status.finished),
             Q(player1=user) | Q(player2=user)
-        ).values_list('pk', flat=True)
+        )
 
     @staticmethod
     def create_new_game(user):

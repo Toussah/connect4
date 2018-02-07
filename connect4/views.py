@@ -6,7 +6,8 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.http import HttpResponse, Http404, HttpResponseRedirect, JsonResponse
-from models import Game, Coin
+from forms import NextMoveForm
+from models import Game, CONNECT4_SIZE
 from utils import GameManager
 
 
@@ -63,7 +64,17 @@ def games(request):
     :param request:
     :return:
     """
-    user_id = request.user.id
+    current_games = GameManager.get_current_games(request.user)
+    join_up_games = GameManager.get_join_up_games(request.user)
+    concluded_games = GameManager.get_concluded_games(request.user)
+    return render(
+        request, 'play/game_display_all.html',
+        {
+            'current_games': current_games,
+            'join_up_games': join_up_games,
+            'concluded_games': concluded_games,
+        }
+    )
 
 
 @login_required()
@@ -75,26 +86,25 @@ def play(request, pk):
     :return:
     """
     game = get_object_or_404(Game, pk=pk)
+    iterator = xrange(CONNECT4_SIZE)
     player, next_turn = game.player_context(request.user)
     if game.status == Game.Status.new:
         if game.player1 == request.user:
-            return render(request, 'play/game_display.html', {'game': game})
+            return render(request, 'play/game_display.html', {'game': game, 'n': iterator})
         elif not game.join_up(request.user):
             raise PermissionDenied('Game is already complete.')
         else:
             return redirect('play_move', pk=pk)
-            pass
     if not player:
         raise PermissionDenied('You are not a player of this game.')
 
     if game.status == Game.Status.finished:
         if player:
-            return render(request, 'play/game_display.html', {'game': game})
+            return render(request, 'play/game_display.html', {'game': game, 'n': iterator})
     elif next_turn:
         return redirect('play_move', pk=pk)
-        pass
     else:
-        return render(request, 'play/game_display.html', {'game': game})
+        return render(request, 'play/game_display.html', {'game': game, 'n': iterator})
 
 
 @login_required()
@@ -105,7 +115,7 @@ def new_game(request):
     :return:
     """
     game = GameManager.create_new_game(request.user)
-    return redirect('play', pk=game.pk)
+    return redirect('play_game', pk=game.pk)
 
 
 @login_required()
@@ -125,8 +135,8 @@ def play_next_move(request, pk):
         context['form'] = form
         if form.is_valid():
             coin = form.save()
-            game.add_coin(coin)
+            game.update_game(coin, request.user)
             return redirect('play_game', pk=pk)
     else:
         context['form'] = NextMoveForm()
-    return render(request, 'play/game_next_move.html', context)
+    return render(request, 'play/play_next_move.html', context)
